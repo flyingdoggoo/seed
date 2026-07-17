@@ -17,14 +17,24 @@ export const DemoConfig = {
 			process.env.LINE_MANAGER_JOB_TITLE || "Engineering Manager",
 		EMAIL:
 			process.env.LINE_MANAGER_EMAIL_ADDRESS ||
-			"nguyenthanhhieu17022005@ehub.enosta.com",
+			"manager@ehub.enosta.com",
 	},
 	PROJECT_MANAGER: {
 		FULLNAME:
-			process.env.PROJECT_MANAGER_FULLNAME || "An Nguyen (EHUB - PM)",
+			process.env.PROJECT_MANAGER_FULLNAME || "Tung Nguyen (EHUB - PM)",
 		JOB_TITLE:
 			process.env.PROJECT_MANAGER_JOB_TITLE || "Project Manager",
 		EMAIL:
-			process.env.PROJECT_MANAGER_EMAIL_ADDRESS || "ray.nguyen@ehub.com",
+			process.env.PROJECT_MANAGER_EMAIL_ADDRESS || "pm@ehub.enosta.com",
+	},
+	NON_MANAGEMENT_EMPLOYEE: {
+		FULLNAME:
+			process.env.NON_MANAGEMENT_EMPLOYEE_FULLNAME ||
+			"Chuong Mai (EHUB - FE)",
+		JOB_TITLE:
+			process.env.NON_MANAGEMENT_EMPLOYEE_JOB_TITLE || "Frontend Engineer",
+		EMAIL:
+			process.env.NON_MANAGEMENT_EMPLOYEE_EMAIL_ADDRESS ||
+			"employee@ehub.enosta.com",
 	},
 };
