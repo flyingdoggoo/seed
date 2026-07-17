@@ -1,0 +1,14 @@
+{
+  "name": "pr-test-seed",
+  "version": "1.0.0",
+  "description": "Standalone seed for PR US3-US6 testing. Reuses node_modules from ehub-nestjs-be.",
+  "private": true,
+  "scripts": {
+    "seed": "cross-env NODE_PATH=../ehub-nestjs-be/node_modules node -r ts-node/register -r tsconfig-paths/register index.ts",
+    "seed:win": "set NODE_PATH=..\\ehub-nestjs-be\\node_modules && node -e \"require('ts-node').register(); require('./index.ts')\""
+  },
+  "notes": [
+    "Chạy từ thư mục này: cd Ehub-Atsone/seeders/pr-test",
+    "Lệnh: node -e \"process.env.NODE_PATH='../ehub-nestjs-be/node_modules'; require('module').Module._initPaths(); require('ts-node').register({transpileOnly: true}); require('./index.ts')\""
+  ]
+}
