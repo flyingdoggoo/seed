@@ -1,8 +1,35 @@
 import { EmploymentStatus, PrismaClient, RoleType } from "@prisma/client";
 import { DemoConfig } from "../../config";
+import { larkEmailByLogin } from "../showcase/real-accounts";
+import { stripParens } from "../showcase/showcase-data";
 import { userData } from "./users-data";
-import { emailMappings, nameMappings } from "./user-mapping";
+import { emailMappings } from "./user-mapping";
 import { pendingEmployeesData } from "./additional-users";
+
+/**
+ * Resolves a department id from a user's parenthesized name, e.g.
+ * "Chuong Mai (EHUB - FE)" -> team token "FE" -> Frontend Team.
+ * Falls back to the org token ("EHUB") and known aliases when the team is absent.
+ */
+function resolveDepartmentId(
+	fullName: string,
+	departments: { id: string; code: string }[],
+): string | null {
+	const match = fullName.match(/\(([^)]+)\)/);
+	if (!match) return null;
+
+	const tokens = match[1].split("-").map((t) => t.trim());
+	const orgToken = tokens[0];
+	const teamToken = tokens[1]; // e.g. "FE", "BE", "MO", "PIDO"
+
+	const find = (code: string) => departments.find((d) => d.code === code);
+
+	// Prefer the team department, then org, then the ES/SP alias.
+	let dept = teamToken ? find(teamToken) : undefined;
+	if (!dept && orgToken) dept = find(orgToken);
+	if (!dept && orgToken === "ES") dept = find("ESP") || find("SP");
+	return dept?.id ?? null;
+}
 
 interface LarkTokenResponse {
 	tenant_access_token?: string;
@@ -62,44 +89,24 @@ export async function seedUsers(prisma: PrismaClient) {
 		});
 	}
 
-	// Apply mappings to userData in-place
-	for (const u of userData) {
-		const mappedEmail = emailMappings[u.email];
-		if (mappedEmail) {
-			u.email = mappedEmail;
-		}
-		const mappedName = nameMappings[u.fullName];
-		if (mappedName) {
-			u.fullName = mappedName;
-		}
-		if (u.lineManager) {
-			const mappedManagerName = nameMappings[u.lineManager];
-			if (mappedManagerName) {
-				u.lineManager = mappedManagerName;
-			}
-		}
-	}
-
 	const departments = await prisma.department.findMany({});
 
+	// Real/hero accounts are already seeded authoritatively by seedRealAccounts;
+	// skip them here so the virtual-pool loop can't overwrite their clean data.
+	const reservedEmails = new Set(Object.keys(larkEmailByLogin));
+
 	for (const u of userData) {
-		const match = u.fullName.match(/\(([^)]+)\)/);
-		let deptId: string | null = null;
-		if (match) {
-			const deptCode = match[1].split("-")[0].trim();
-			let dbDept = departments.find((d) => d.code === deptCode);
-			if (!dbDept && deptCode === "ES") {
-				dbDept = departments.find((d) => d.code === "ESP" || d.code === "SP");
-			}
-			if (dbDept) {
-				deptId = dbDept.id;
-			}
-		}
+		if (reservedEmails.has(u.email)) continue;
+
+		const deptId = resolveDepartmentId(u.fullName, departments);
+
+		// Store the display name without the "(ORG - TEAM)" suffix.
+		const cleanName = stripParens(u.fullName);
 
 		await prisma.user.upsert({
 			where: { email: u.email },
 			update: {
-				fullName: u.fullName,
+				fullName: cleanName,
 				employeeCode: u.employeeCode || null,
 				jobTitle: u.jobTitle || null,
 				status: EmploymentStatus.ACTIVE,
@@ -109,7 +116,7 @@ export async function seedUsers(prisma: PrismaClient) {
 			create: {
 				email: u.email,
 				employeeCode: u.employeeCode || null,
-				fullName: u.fullName,
+				fullName: cleanName,
 				jobTitle: u.jobTitle || null,
 				status: EmploymentStatus.ACTIVE,
 				joinedAt: u.joinedAt ? new Date(u.joinedAt) : null,
@@ -119,12 +126,23 @@ export async function seedUsers(prisma: PrismaClient) {
 	}
 	console.log("Seeded Users.");
 
-	// Resolve Lark Open IDs and seed LarkAccountLink
-	const realEmails = [
-		...Object.values(emailMappings),
-		DemoConfig.HR_ADMIN.EMAIL,
-		DemoConfig.LINE_MANAGER.EMAIL,
-	];
+	// Resolve Lark Open IDs and seed LarkAccountLink.
+	// Lark knows people by their contact address (larkEmail), which may differ from
+	// the @ehub.enosta.com login on User.email. Resolve by larkEmail, then map the
+	// result back to the login email to find the DB user.
+	const loginEmailByLark: Record<string, string> = {};
+	for (const [login, lark] of Object.entries(larkEmailByLogin)) {
+		loginEmailByLark[lark] = login;
+	}
+
+	const realEmails = Array.from(
+		new Set([
+			...Object.values(emailMappings),
+			...Object.values(larkEmailByLogin),
+			DemoConfig.HR_ADMIN.EMAIL,
+			DemoConfig.LINE_MANAGER.EMAIL,
+		]),
+	);
 
 	try {
 		console.log("Resolving Lark Open IDs for real accounts...");
@@ -163,8 +181,11 @@ export async function seedUsers(prisma: PrismaClient) {
 						console.log(`Could not resolve Open ID for ${item.email}`);
 						continue;
 					}
+					// item.email is the Lark contact address; a real account's DB user
+					// lives under its @ehub.enosta.com login. Bridge back when needed.
+					const loginEmail = loginEmailByLark[item.email] ?? item.email;
 					const dbUser = await prisma.user.findUnique({
-						where: { email: item.email },
+						where: { email: loginEmail },
 					});
 					if (dbUser) {
 						let avatarUrl: string | null = null;

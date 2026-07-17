@@ -5,24 +5,25 @@ import { prisma } from "./prisma";
 import { seedMockActionPlans } from "./modules/action-plans";
 import { seedMockOneOnOnes } from "./modules/bilateral-meetings";
 import { seedCriteriaConfig } from "./modules/criteria-config";
-import { seedMockPeerAssignments } from "./modules/peer-assignments";
 import { seedMockPerformanceRecords } from "./modules/performance-records";
-import { seedPrCyclesModule } from "./modules/pr-cycles";
 import { seedPrFormsModule } from "./modules/pr-forms";
 import { seedMockSubmissions } from "./modules/pr-submissions";
-import { seedMockRoundtables } from "./modules/roundtable-sessions";
+import {
+	seedShowcaseCyclesModule,
+	seedShowcaseRoundtables,
+} from "./modules/showcase";
+import { CYCLE } from "./modules/showcase/showcase-data";
 import { seedUsersModule } from "./modules/users";
-import { seedUS3US6Module } from "./modules/us3-us6";
 import { seedNotificationsModule } from "./modules/notifications";
 
 export async function seedPRTest(prisma: PrismaClient) {
 	console.log("==========================================");
 	console.log("Starting PR Test Seeding Process...");
 	console.log("==========================================\n");
-	console.log("NOTE: This seed mirrors the dev seed + adds US3–US6 test cycles.");
+	console.log("NOTE: Showcase seed — 4 hero accounts + 5-cycle matrix.");
 	console.log("Location: Ehub-Atsone/seeders/pr-test/ (safe from git pull overwrite)\n");
 
-	// 1. Seed Users (Departments, Projects, Roles, Users, Line Managers)
+	// 1. Seed Users (Departments, Roles, real+hero accounts, virtual pool, managers, Projects)
 	console.log("--- 1. Seeding Users Module ---");
 	await seedUsersModule(prisma);
 
@@ -38,21 +39,20 @@ export async function seedPRTest(prisma: PrismaClient) {
 	console.log("\n--- 3. Seeding PR Forms Module ---");
 	await seedPrFormsModule(prisma);
 
-	// 4. Seed PR Cycles (Using Users and Forms Data)
-	console.log("\n--- 4. Seeding PR Cycles Module (Dev data) ---");
-	await seedPrCyclesModule(prisma);
+	// 4. Seed the 5-cycle matrix (cycles + eligible participants + peer assignments),
+	//    then fill the ACTIVE cycle to its in-progress 90%/50% state.
+	console.log("\n--- 4. Seeding Showcase Cycles (5-cycle matrix) ---");
+	console.log("    COMPLETED: Q1 2025, Q3 2025 (full execution data)");
+	console.log("    ACTIVE:    Q3 2026 (Peer Review stage, 90% self / 50% peer)");
+	console.log("    DRAFT:     Q4 2026 (ready to publish), Q1 2027 (needs PM confirm)");
+	await seedShowcaseCyclesModule(prisma);
 
-	// 5. Seed US3–US6 Test Cycles (must be before mock execution data so active cycles are in the DB)
-	console.log("\n--- 5. Seeding US3-US6 Test Cycles ---");
-	console.log("    Cycle A: [TEST] Q3 2026 PR Cycle — Active (14-day deadline)");
-	console.log("    Cycle B: [TEST] Q1 2026 PR Cycle (Overdue) — Deadline passed 30 days ago");
-	await seedUS3US6Module(prisma);
-
-	// 6. Seed Mock Execution Data (Full Cycle Data for completed and active cycles)
-	console.log("\n--- 6. Seeding Mock Execution Data ---");
-	await seedMockPeerAssignments(prisma);
+	// 5. Seed Mock Execution Data.
+	//    seedMockSubmissions fills COMPLETED cycles to 100% self + peer.
+	//    Roundtables / 1:1 / action plans / performance records follow.
+	console.log("\n--- 5. Seeding Mock Execution Data ---");
 	await seedMockSubmissions(prisma);
-	await seedMockRoundtables(prisma);
+	await seedShowcaseRoundtables(prisma);
 	await seedMockOneOnOnes(prisma);
 	await seedMockActionPlans(prisma);
 	await seedMockPerformanceRecords(prisma);
@@ -61,24 +61,20 @@ export async function seedPRTest(prisma: PrismaClient) {
 	await generatePostmanGuide(prisma);
 
 	console.log("\n==========================================");
-	console.log("PR Test Seeding Completed Successfully!");
+	console.log("Showcase Seeding Completed Successfully!");
 	console.log("==========================================");
-	console.log("\nTest Scenarios Summary:");
-	console.log("  Cycle A (Active - còn hạn 14 ngày):");
-	console.log("    - Alice : Not Started            → US3: xem form | US5: block (empty form)");
-	console.log("    - Bob   : Self DRAFT + Peer DRAFT → US4: điền dở | US5: block (missing required)");
-	console.log("    - Carol : Self SUBMITTED + Peer SUBMITTED → US5: success | US6: read-only");
-	console.log("  Cycle B (Overdue - quá hạn 30 ngày):");
-	console.log("    - Alice : Self LOCKED + Peer LOCKED → US6: deadline auto-lock");
-	console.log("    - Bob   : Self LATE + Peer LOCKED   → US6: draft → LATE khi quá hạn");
-	console.log("    - Carol : Self SUBMITTED + Peer SUBMITTED → US6: submitted trước hạn → read-only");
+	console.log("\nHero logins (password via SSO/Lark):");
+	console.log("  manager@ehub.enosta.com  — Long Nguyen  (LINE_MANAGER)");
+	console.log("  pm@ehub.enosta.com       — Tung Nguyen  (PROJECT_MANAGER)");
+	console.log("  employee@ehub.enosta.com — Chuong Mai   (EMPLOYEE)");
+	console.log("  hr@ehub.enosta.com       — HR Admin     (HR_ADMIN)");
 }
 
 async function generatePostmanGuide(prisma: PrismaClient) {
 	const sessions = await prisma.roundtableSession.findMany({
 		where: {
 			cycle: {
-				name: { startsWith: "[TEST]" }
+				name: CYCLE.ACTIVE,
 			}
 		},
 		include: {
@@ -92,7 +88,7 @@ async function generatePostmanGuide(prisma: PrismaClient) {
 
 	const activeCycle = await prisma.pRCycle.findFirst({
 		where: {
-			name: "[TEST] Q3 2026 PR Cycle",
+			name: CYCLE.ACTIVE,
 		},
 	});
 	const activeCycleId = activeCycle?.id || "N/A";

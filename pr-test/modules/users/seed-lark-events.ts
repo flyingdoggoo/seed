@@ -1,5 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { DemoConfig } from "../../config";
+import { larkEmailByLogin } from "../showcase/real-accounts";
+import {
+	HERO_LINE_MANAGER,
+	HERO_PROJECT_MANAGER,
+} from "../showcase/showcase-data";
 
 interface LarkTokenResponse {
 	tenant_access_token?: string;
@@ -165,18 +170,19 @@ export async function seedLarkCalendarEvents(prisma: PrismaClient) {
 			console.warn(`Failed to resolve bot calendar dynamically: ${calData.msg}. Using fallback.`);
 		}
 
-		const targetEmails = [
-			"kien.nguyen@team.enosta.com",
-			"lekyba2000hc@gmail.com",
-			"voductaitxqt123@gmail.com",
-			"tai.vo@team.enosta.com",
-			"dklinh05@gmail.com",
-			"hoangnguyendepgiai@gmail.com",
-			"itadadenhat@gmail.com",
-			"kien56162@gmail.com",
-			DemoConfig.LINE_MANAGER.EMAIL,
-			DemoConfig.HR_ADMIN.EMAIL,
-		];
+		// LarkAccountLink.email stores each person's Lark-resolution address
+		// (larkEmail). Long + Tung are the showcase roundtable reviewers, so their
+		// larkEmails are always included; the rest come from the real-account map.
+		const targetEmails = Array.from(
+			new Set([
+				larkEmailByLogin[HERO_LINE_MANAGER.email] ?? HERO_LINE_MANAGER.larkEmail,
+				larkEmailByLogin[HERO_PROJECT_MANAGER.email] ??
+					HERO_PROJECT_MANAGER.larkEmail,
+				...Object.values(larkEmailByLogin),
+				DemoConfig.LINE_MANAGER.EMAIL,
+				DemoConfig.HR_ADMIN.EMAIL,
+			]),
+		);
 		const linkedAccounts = await prisma.larkAccountLink.findMany({
 			where: {
 				email: { in: targetEmails },

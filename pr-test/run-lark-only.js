@@ -1,5 +1,7 @@
 const path = require("path");
-const beDir = path.resolve(__dirname, "../../ehub-nestjs-be");
+const beDir = process.env.EHUB_BE_DIR
+	? path.resolve(process.env.EHUB_BE_DIR)
+	: path.resolve(__dirname, "../../official_backend/ehub-nestjs-be");
 const beNodeModules = path.resolve(beDir, "node_modules");
 
 process.env.NODE_PATH = beNodeModules;

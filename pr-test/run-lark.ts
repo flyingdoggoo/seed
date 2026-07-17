@@ -5,7 +5,9 @@ import { PrismaClient } from "@prisma/client";
 import { Pool } from "pg";
 import { seedLarkCalendarEvents } from "./modules/users/seed-lark-events";
 
-dotenv.config({ path: path.resolve(__dirname, "../../ehub-nestjs-be/.env") });
+dotenv.config({
+	path: path.resolve(__dirname, "../../official_backend/ehub-nestjs-be/.env"),
+});
 
 const pool = new Pool({
 	connectionString: process.env.DATABASE_URL,

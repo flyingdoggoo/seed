@@ -19,9 +19,18 @@ const path = require("path");
 const { execSync } = require("child_process");
 
 // 1. Tìm đường dẫn đến ehub-nestjs-be/node_modules và thư mục backend
-const beDir = path.resolve(__dirname, "../../ehub-nestjs-be");
+// Có thể override bằng biến môi trường EHUB_BE_DIR nếu layout workspace khác chuẩn
+const beDir = process.env.EHUB_BE_DIR
+	? path.resolve(process.env.EHUB_BE_DIR)
+	: path.resolve(__dirname, "../../official_backend/ehub-nestjs-be");
 const beNodeModules = path.resolve(beDir, "node_modules");
 process.env.NODE_PATH = beNodeModules;
+
+if (!require("fs").existsSync(beDir)) {
+	console.error(`Không tìm thấy backend directory: ${beDir}`);
+	console.error("Set biến môi trường EHUB_BE_DIR trỏ đến ehub-nestjs-be nếu layout workspace khác chuẩn.");
+	process.exit(1);
+}
 
 // 2. Chạy prisma db push --force-reset để reset database sạch trước khi seed
 console.log("==========================================");

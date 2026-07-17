@@ -2,7 +2,9 @@ import * as dotenv from "dotenv";
 import * as path from "path";
 
 // Load .env từ ehub-nestjs-be (chạy từ bất kỳ CWD nào)
-dotenv.config({ path: path.resolve(__dirname, "../../ehub-nestjs-be/.env") });
+dotenv.config({
+	path: path.resolve(__dirname, "../../official_backend/ehub-nestjs-be/.env"),
+});
 
 export const DemoConfig = {
 	HR_ADMIN: {
