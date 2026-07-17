@@ -58,7 +58,9 @@ export const HERO_PROJECT_MANAGER: ShowcaseAccount = {
 	joinedAt: "1999-07-28T00:00:00.000Z",
 	role: RoleType.PROJECT_MANAGER,
 	departmentCode: "PMO",
-	lineManagerEmail: HERO_LINE_MANAGER.email,
+	// Tung is a top-level manager (peer of Long), so he has no line manager above
+	// him. He must NOT report to Long — both are management-level and same-tier.
+	lineManagerEmail: null,
 };
 
 export const HERO_EMPLOYEE: ShowcaseAccount = {
