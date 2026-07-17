@@ -9,7 +9,7 @@ import {
 	getRandomItem,
 	getRandomRating,
 } from "../mock-data/mock-utils";
-import { ROUNDTABLE_REVIEWER_EMAILS } from "../showcase-data";
+import { ROUNDTABLE_REVIEWER_EMAILS, CYCLE } from "../showcase-data";
 
 /**
  * Showcase roundtable seed (replaces the old AOO/BDO-only mock).
@@ -52,9 +52,14 @@ export async function seedShowcaseRoundtables(prisma: PrismaClient) {
 		include: { criteria: true },
 	});
 
-	// COMPLETED cycles only — the ACTIVE cycle's roundtable is created by HR manually.
+	// COMPLETED cycles or the active Bilateral cycle
 	const targetCycles = await prisma.pRCycle.findMany({
-		where: { status: CycleStatus.COMPLETED },
+		where: {
+			OR: [
+				{ status: CycleStatus.COMPLETED },
+				{ name: CYCLE.BILATERAL },
+			],
+		},
 		include: { stages: true, participants: true },
 	});
 

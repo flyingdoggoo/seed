@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { CYCLE, HERO_EMPLOYEE } from "../showcase-data";
 
 export async function seedMockOneOnOnes(prisma: PrismaClient) {
 	console.log("Seeding Mock 1:1 Meetings...");
@@ -11,7 +12,12 @@ export async function seedMockOneOnOnes(prisma: PrismaClient) {
 	});
 
 	const completedCycles = await prisma.pRCycle.findMany({
-		where: { status: "COMPLETED" },
+		where: {
+			OR: [
+				{ status: "COMPLETED" },
+				{ name: CYCLE.BILATERAL },
+			],
+		},
 		include: { participants: true },
 	});
 
@@ -46,12 +52,16 @@ export async function seedMockOneOnOnes(prisma: PrismaClient) {
 			});
 
 			if (!existingMeeting) {
+				const isCompletedCycle = cycle.status === "COMPLETED";
+				const isHeroEmployee = reviewee.email === HERO_EMPLOYEE.email;
+				const meetingStatus = isCompletedCycle ? true : !isHeroEmployee;
+
 				await prisma.oneOnOneMeeting.create({
 					data: {
 						cycleId: cycle.id,
 						employeeId: reviewee.id,
 						managerId: managerId,
-						status: true,
+						status: meetingStatus,
 						RoundTableResultId: result.id,
 					},
 				});

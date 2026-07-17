@@ -1,6 +1,6 @@
 # PR Test Seed (US3-US6)
 
-Thư mục seed độc lập tại cấp `Ehub-Atsone/seeders/pr-test/` để phục vụ test US3-US6 và Lark Scheduler.
+Thư mục seed độc lập tại cấp `seeders/pr-test/` để phục vụ test US3-US6 và Lark Scheduler.
 
 ---
 
@@ -12,15 +12,10 @@ Thư mục seed độc lập tại cấp `Ehub-Atsone/seeders/pr-test/` để ph
 
 ### Cách A: Từ thư mục gốc dự án (`d:\Workspace\Ehub-Backend\`)
 ```bash
-node Ehub-Atsone/seeders/pr-test/run.js
-```
-
-### Cách B: Từ thư mục `Ehub-Atsone/`
-```bash
 node seeders/pr-test/run.js
 ```
 
-### Cách C: Từ thư mục `Ehub-Atsone/seeders/pr-test/`
+### Cách B: Từ thư mục `seeders/pr-test/`
 ```bash
 node run.js
 ```
@@ -32,15 +27,10 @@ node run.js
 
 ### Cách A: Từ thư mục gốc dự án (`d:\Workspace\Ehub-Backend\`)
 ```bash
-node Ehub-Atsone/seeders/pr-test/run-lark-only.js
-```
-
-### Cách B: Từ thư mục `Ehub-Atsone/`
-```bash
 node seeders/pr-test/run-lark-only.js
 ```
 
-### Cách C: Từ thư mục `Ehub-Atsone/seeders/pr-test/`
+### Cách B: Từ thư mục `seeders/pr-test/`
 ```bash
 node run-lark-only.js
 ```

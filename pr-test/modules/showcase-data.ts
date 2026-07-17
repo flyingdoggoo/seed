@@ -72,7 +72,7 @@ export const HERO_EMPLOYEE: ShowcaseAccount = {
 	joinedAt: "2020-07-01T00:00:00.000Z",
 	role: RoleType.EMPLOYEE,
 	departmentCode: "FE",
-	lineManagerEmail: HERO_LINE_MANAGER.email,
+	lineManagerEmail: HERO_PROJECT_MANAGER.email,
 };
 
 export const HERO_HR_ADMIN: ShowcaseAccount = {
@@ -109,6 +109,7 @@ export const CYCLE = {
 	COMPLETED_A: "Q1 2025 PR Cycle",
 	COMPLETED_B: "Q3 2025 PR Cycle",
 	ACTIVE: "Q3 2026 PR Cycle",
+	BILATERAL: "Q2 2026 PR Cycle",
 	DRAFT_READY: "Q4 2026 PR Cycle",
 	DRAFT_NEEDS_PM: "Q1 2027 PR Cycle",
 } as const;
@@ -177,6 +178,20 @@ export const CYCLE_SPECS: CycleSpec[] = [
 			peer: { start: "2026-07-15T00:00:00.000Z", end: "2026-07-25T00:00:00.000Z" },
 			roundtable: { start: "2026-07-25T00:00:00.000Z", end: "2026-07-30T00:00:00.000Z" },
 			oneOnOne: { start: "2026-07-30T00:00:00.000Z", end: "2026-08-15T00:00:00.000Z" },
+		},
+		hasRoundtable: true,
+	},
+	{
+		name: CYCLE.BILATERAL,
+		status: CycleStatus.ACTIVE,
+		startDate: "2026-06-01T00:00:00.000Z",
+		endDate: "2026-07-30T00:00:00.000Z",
+		tenureMonths: 4,
+		stages: {
+			self: { start: "2026-06-01T00:00:00.000Z", end: "2026-06-15T00:00:00.000Z" },
+			peer: { start: "2026-06-15T00:00:00.000Z", end: "2026-06-30T00:00:00.000Z" },
+			roundtable: { start: "2026-06-30T00:00:00.000Z", end: "2026-07-10T00:00:00.000Z" },
+			oneOnOne: { start: "2026-07-10T00:00:00.000Z", end: "2026-07-30T00:00:00.000Z" },
 		},
 		hasRoundtable: true,
 	},

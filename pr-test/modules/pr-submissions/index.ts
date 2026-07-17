@@ -137,6 +137,8 @@ function getDetailedAnswer(text: string): string {
 	return fallbackFeedback[Math.floor(Math.random() * fallbackFeedback.length)];
 }
 
+import { CYCLE } from "../showcase-data";
+
 export async function seedMockSubmissions(prisma: PrismaClient) {
 	console.log("Seeding Mock PR Form Submissions...");
 
@@ -145,7 +147,12 @@ export async function seedMockSubmissions(prisma: PrismaClient) {
 	});
 
 	const completedCycles = await prisma.pRCycle.findMany({
-		where: { status: "COMPLETED" },
+		where: {
+			OR: [
+				{ status: "COMPLETED" },
+				{ name: CYCLE.BILATERAL },
+			],
+		},
 		include: { stages: true, participants: true },
 	});
 
