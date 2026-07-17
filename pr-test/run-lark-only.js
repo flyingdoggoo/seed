@@ -1,8 +1,43 @@
 const path = require("path");
-const beDir = process.env.EHUB_BE_DIR
-	? path.resolve(process.env.EHUB_BE_DIR)
-	: path.resolve(__dirname, "../../official_backend/ehub-nestjs-be");
+const fs = require("fs");
+const findBackendDir = () => {
+	if (process.env.EHUB_BE_DIR) {
+		return path.resolve(process.env.EHUB_BE_DIR);
+	}
+	const candidates = [
+		path.resolve(__dirname, "../../Ehub-Atsone/ehub-nestjs-be"),
+		path.resolve(__dirname, "../../official_backend/ehub-nestjs-be"),
+		path.resolve(__dirname, "../../ehub-nestjs-be"),
+	];
+	for (const candidate of candidates) {
+		if (fs.existsSync(candidate) && fs.existsSync(path.join(candidate, "package.json"))) {
+			return candidate;
+		}
+	}
+	return candidates[1]; // fallback to default
+};
+const beDir = findBackendDir();
+process.env.EHUB_BE_DIR = beDir;
 const beNodeModules = path.resolve(beDir, "node_modules");
+
+// Intercept require calls to map imports from the default path to the actual backend path if different
+const Module = require("module");
+const originalRequire = Module.prototype.require;
+Module.prototype.require = function (request) {
+	if (typeof request === "string" && request.includes("official_backend/ehub-nestjs-be")) {
+		const targetDir = process.env.EHUB_BE_DIR
+			? path.resolve(process.env.EHUB_BE_DIR)
+			: path.resolve(__dirname, "../../official_backend/ehub-nestjs-be");
+		const absoluteRequest = path.resolve(path.dirname(this.filename), request);
+		const defaultBeDir = path.resolve(__dirname, "../../official_backend/ehub-nestjs-be");
+		if (absoluteRequest.startsWith(defaultBeDir)) {
+			const relativePart = path.relative(defaultBeDir, absoluteRequest);
+			const newPath = path.resolve(targetDir, relativePart);
+			return originalRequire.call(this, newPath);
+		}
+	}
+	return originalRequire.call(this, request);
+};
 
 process.env.NODE_PATH = beNodeModules;
 require("module").Module._initPaths();

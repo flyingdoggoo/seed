@@ -20,7 +20,7 @@ To hit the endpoints, you must include a valid Bearer token in the `Authorizatio
 * **URL Format:** `http://localhost:3000/api/v1/roundtable-sessions/me`
 * **Sample URL (Active Test Cycle):**
   ```
-  GET http://localhost:3000/api/v1/roundtable-sessions/me?cycleId=cmrofwylw01d5e8a76ctb8w1b
+  GET http://localhost:3000/api/v1/roundtable-sessions/me?cycleId=cmrognis601d3487kn3hxcf6d
   ```
 
 ### B. Get Reviewees List in Roundtable Session
@@ -46,28 +46,28 @@ To hit the endpoints, you must include a valid Bearer token in the `Authorizatio
 1. **Scheduled Session (Roundtable EG BACK OFFICE — Q3 2026 PR Cycle):**
    - **Get Reviewees URL:**
      ```
-     GET http://localhost:3000/api/v1/roundtable-sessions/cmrofy23n0lwge8a7xpi2ixek/reviewees
+     GET http://localhost:3000/api/v1/roundtable-sessions/cmrognyq50lwg487kqn2zd4pa/reviewees
      ```
    - **View Evidence Matrix URL:**
-     - **Reviewee:** Trang Tran (ID: cmrofwkx9003ve8a7qni2h04g)
+     - **Reviewee:** Trang Tran (ID: cmrogn9jq003v487kl6dv7v7q)
      ```
-     GET http://localhost:3000/api/v1/roundtable-sessions/cmrofy23n0lwge8a7xpi2ixek/reviewees/cmrofwkx9003ve8a7qni2h04g/evidence
+     GET http://localhost:3000/api/v1/roundtable-sessions/cmrognyq50lwg487kqn2zd4pa/reviewees/cmrogn9jq003v487kl6dv7v7q/evidence
      ```
    - **Save Calibrated Scores URL:**
      ```
-     PATCH http://localhost:3000/api/v1/roundtable-sessions/cmrofy23n0lwge8a7xpi2ixek/reviewees/cmrofwkx9003ve8a7qni2h04g/scores
+     PATCH http://localhost:3000/api/v1/roundtable-sessions/cmrognyq50lwg487kqn2zd4pa/reviewees/cmrogn9jq003v487kl6dv7v7q/scores
      ```
      - **Sample Body:**
        ```json
        {
          "scores": [
            {
-             "criterionId": "cmrofwuu100ibe8a7k60ic3e6",
+             "criterionId": "cmrognhbm00ib487kuis6e1lc",
              "score": 4,
              "feedback": "Strong performance, met expectations."
            },
            {
-             "criterionId": "cmrofwuu600ice8a7olg3oano",
+             "criterionId": "cmrognhbo00ic487khu2tto5p",
              "score": 5,
              "feedback": "Exceptional productivity and quality."
            }
@@ -76,7 +76,7 @@ To hit the endpoints, you must include a valid Bearer token in the `Authorizatio
        ```
    - **Complete Roundtable Session URL:**
      ```
-     POST http://localhost:3000/api/v1/roundtable-sessions/cmrofy23n0lwge8a7xpi2ixek/complete
+     POST http://localhost:3000/api/v1/roundtable-sessions/cmrognyq50lwg487kqn2zd4pa/complete
      ```
 
 

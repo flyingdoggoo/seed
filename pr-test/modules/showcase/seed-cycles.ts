@@ -5,7 +5,7 @@ import {
 	RoleScope,
 	StageType,
 } from "@prisma/client";
-import { PeerMatchingEngine } from "../../../../official_backend/ehub-nestjs-be/src/features/peer-assignments/utils/peer-matching-engine";
+import * as path from "path";
 import {
 	CYCLE,
 	CYCLE_SPECS,
@@ -13,6 +13,41 @@ import {
 	HERO_PROJECT_MANAGER,
 	isEligible,
 } from "./showcase-data";
+
+import * as fs from "fs";
+
+const findBackendDir = () => {
+	if (process.env.EHUB_BE_DIR) {
+		return path.resolve(process.env.EHUB_BE_DIR);
+	}
+	const candidates = [
+		path.resolve(__dirname, "../../../../Ehub-Atsone/ehub-nestjs-be"),
+		path.resolve(__dirname, "../../../../official_backend/ehub-nestjs-be"),
+		path.resolve(__dirname, "../../../../ehub-nestjs-be"),
+	];
+	for (const candidate of candidates) {
+		if (fs.existsSync(candidate) && fs.existsSync(path.join(candidate, "package.json"))) {
+			return candidate;
+		}
+	}
+	return candidates[1]; // fallback to default
+};
+const beDir = findBackendDir();
+
+const { PeerMatchingEngine } = require(
+	path.resolve(
+		beDir,
+		"src/features/peer-assignments/utils/peer-matching-engine",
+	),
+) as {
+	generate: (
+		employees: unknown[],
+		startDate: Date,
+	) => Array<{
+		revieweeId: string;
+		reviewerId: string | null;
+	}>;
+};
 
 /**
  * The 5-cycle matrix (replaces the old pr-cycles seed).

@@ -1,9 +1,27 @@
 import * as dotenv from "dotenv";
 import * as path from "path";
+import * as fs from "fs";
 
 // Load .env từ ehub-nestjs-be (chạy từ bất kỳ CWD nào)
+const findBackendDir = () => {
+	if (process.env.EHUB_BE_DIR) {
+		return path.resolve(process.env.EHUB_BE_DIR);
+	}
+	const candidates = [
+		path.resolve(__dirname, "../../Ehub-Atsone/ehub-nestjs-be"),
+		path.resolve(__dirname, "../../official_backend/ehub-nestjs-be"),
+		path.resolve(__dirname, "../../ehub-nestjs-be"),
+	];
+	for (const candidate of candidates) {
+		if (fs.existsSync(candidate) && fs.existsSync(path.join(candidate, "package.json"))) {
+			return candidate;
+		}
+	}
+	return candidates[1]; // fallback to default
+};
+const beDir = findBackendDir();
 dotenv.config({
-	path: path.resolve(__dirname, "../../official_backend/ehub-nestjs-be/.env"),
+	path: path.resolve(beDir, ".env"),
 });
 
 export const DemoConfig = {

@@ -20,10 +20,24 @@ import { Pool } from "pg";
 // leaving DATABASE_URL blank — which surfaces as a SASL
 // "client password must be a string" error during seeding. Reading the file
 // directly sidesteps whatever those loaders did to process.env.
-const envPath = path.resolve(
-	__dirname,
-	"../../official_backend/ehub-nestjs-be/.env",
-);
+const findBackendDir = () => {
+	if (process.env.EHUB_BE_DIR) {
+		return path.resolve(process.env.EHUB_BE_DIR);
+	}
+	const candidates = [
+		path.resolve(__dirname, "../../Ehub-Atsone/ehub-nestjs-be"),
+		path.resolve(__dirname, "../../official_backend/ehub-nestjs-be"),
+		path.resolve(__dirname, "../../ehub-nestjs-be"),
+	];
+	for (const candidate of candidates) {
+		if (fs.existsSync(candidate) && fs.existsSync(path.join(candidate, "package.json"))) {
+			return candidate;
+		}
+	}
+	return candidates[1]; // fallback to default
+};
+const beDir = findBackendDir();
+const envPath = path.resolve(beDir, ".env");
 const fileEnv: Record<string, string> = fs.existsSync(envPath)
 	? dotenv.parse(fs.readFileSync(envPath))
 	: {};
