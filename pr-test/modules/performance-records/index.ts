@@ -1,21 +1,32 @@
 import { CycleStatus, PrismaClient } from "@prisma/client";
 import { getRandomItem } from "../mock-data/mock-utils";
 
+// How many criteria each related author logs against, per cycle. Higher = a richer
+// evidence matrix in the roundtable room (logs are grouped per criterion there).
+const CRITERIA_PER_AUTHOR = 4;
+
 /**
  * Performance records (continuous feedback logs).
  *
- * Requirement: every roundtable reviewee must have performance logs authored by
- * the people related to them — their line manager and their peer reviewers.
- * We seed logs against the two COMPLETED cycles so the history is populated.
+ * These are the primary evidence source in the roundtable room: the evidence matrix
+ * shows, per criterion, every log written about the reviewee — scoped to the
+ * session's cycle (record.cycleId === session.cycleId). So records must be tagged to
+ * the SAME cycle the roundtable belongs to.
+ *
+ * We seed logs for COMPLETED cycles (history) AND the ACTIVE cycle (so HR's manually
+ * created roundtable has evidence). Authors = each reviewee's line manager + peer
+ * reviewers. Keyed off cycle PARTICIPANTS, not roundtable reviewees, because the
+ * ACTIVE cycle has no seeded roundtable sessions yet.
  */
 export async function seedMockPerformanceRecords(prisma: PrismaClient) {
-	console.log("Seeding Performance Records (per roundtable reviewee)...");
+	console.log("Seeding Performance Records (per cycle participant)...");
 
-	const completedCycles = await prisma.pRCycle.findMany({
-		where: { status: CycleStatus.COMPLETED },
+	const targetCycles = await prisma.pRCycle.findMany({
+		where: { status: { in: [CycleStatus.COMPLETED, CycleStatus.ACTIVE] } },
+		include: { participants: true },
 	});
-	if (completedCycles.length === 0) {
-		console.warn("  No COMPLETED cycles found. Skipping performance records.");
+	if (targetCycles.length === 0) {
+		console.warn("  No COMPLETED/ACTIVE cycles found. Skipping performance records.");
 		return;
 	}
 
@@ -39,15 +50,11 @@ export async function seedMockPerformanceRecords(prisma: PrismaClient) {
 
 	let recordCount = 0;
 
-	for (const cycle of completedCycles) {
-		// Reviewees who actually went through the roundtable in this cycle.
-		const reviewees = await prisma.roundtableReviewee.findMany({
-			where: { session: { cycleId: cycle.id } },
-			include: { employee: true },
-		});
-
-		for (const rt of reviewees) {
-			const employeeId = rt.employeeId;
+	for (const cycle of targetCycles) {
+		// Every participant in the cycle is a potential roundtable reviewee — seed
+		// evidence for all of them regardless of whether a session exists yet.
+		for (const participant of cycle.participants) {
+			const employeeId = participant.employeeId;
 
 			// Related authors = line manager + peer reviewers for this reviewee.
 			const managerRel = await prisma.userManagerRelation.findFirst({
@@ -74,9 +81,10 @@ export async function seedMockPerformanceRecords(prisma: PrismaClient) {
 
 			if (authorIds.size === 0) continue;
 
-			// Each related author writes a log against a couple of criteria.
+			// Each related author writes logs against several criteria, so the
+			// evidence matrix has multiple entries per criterion per reviewee.
 			for (const authorId of authorIds) {
-				const numCriteria = Math.min(2, criteria.length);
+				const numCriteria = Math.min(CRITERIA_PER_AUTHOR, criteria.length);
 				for (let i = 0; i < numCriteria; i++) {
 					const crit =
 						criteria[(recordCount + i) % criteria.length];

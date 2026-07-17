@@ -20,7 +20,7 @@ To hit the endpoints, you must include a valid Bearer token in the `Authorizatio
 * **URL Format:** `http://localhost:3000/api/v1/roundtable-sessions/me`
 * **Sample URL (Active Test Cycle):**
   ```
-  GET http://localhost:3000/api/v1/roundtable-sessions/me?cycleId=cmrognis601d3487kn3hxcf6d
+  GET http://localhost:3000/api/v1/roundtable-sessions/me?cycleId=cmroi223i01e938a7kt7fet0z
   ```
 
 ### B. Get Reviewees List in Roundtable Session
@@ -42,41 +42,5 @@ To hit the endpoints, you must include a valid Bearer token in the `Authorizatio
 ---
 
 ## 3. Sample Postman URLs for Active Cycles
-
-1. **Scheduled Session (Roundtable EG BACK OFFICE — Q3 2026 PR Cycle):**
-   - **Get Reviewees URL:**
-     ```
-     GET http://localhost:3000/api/v1/roundtable-sessions/cmrognyq50lwg487kqn2zd4pa/reviewees
-     ```
-   - **View Evidence Matrix URL:**
-     - **Reviewee:** Trang Tran (ID: cmrogn9jq003v487kl6dv7v7q)
-     ```
-     GET http://localhost:3000/api/v1/roundtable-sessions/cmrognyq50lwg487kqn2zd4pa/reviewees/cmrogn9jq003v487kl6dv7v7q/evidence
-     ```
-   - **Save Calibrated Scores URL:**
-     ```
-     PATCH http://localhost:3000/api/v1/roundtable-sessions/cmrognyq50lwg487kqn2zd4pa/reviewees/cmrogn9jq003v487kl6dv7v7q/scores
-     ```
-     - **Sample Body:**
-       ```json
-       {
-         "scores": [
-           {
-             "criterionId": "cmrognhbm00ib487kuis6e1lc",
-             "score": 4,
-             "feedback": "Strong performance, met expectations."
-           },
-           {
-             "criterionId": "cmrognhbo00ic487khu2tto5p",
-             "score": 5,
-             "feedback": "Exceptional productivity and quality."
-           }
-         ]
-       }
-       ```
-   - **Complete Roundtable Session URL:**
-     ```
-     POST http://localhost:3000/api/v1/roundtable-sessions/cmrognyq50lwg487kqn2zd4pa/complete
-     ```
 
 

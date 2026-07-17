@@ -5,7 +5,7 @@ import {
 	HERO_LINE_MANAGER,
 	HERO_PROJECT_MANAGER,
 	type ShowcaseAccount,
-} from "./showcase-data";
+} from "../showcase-data";
 
 /**
  * Real Lark accounts from the HRIS export (source of truth for identities).

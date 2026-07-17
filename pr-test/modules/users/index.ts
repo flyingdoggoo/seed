@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import {
 	seedRealAccountManagerRelations,
 	seedRealAccounts,
-} from "../showcase/seed-real-accounts";
+} from "./seed-real-accounts";
 import { seedDepartments } from "./seed-departments";
 import { seedProjects } from "./seed-projects";
 import { seedRolesAndPermissions } from "./seed-roles";

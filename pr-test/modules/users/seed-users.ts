@@ -1,7 +1,7 @@
 import { EmploymentStatus, PrismaClient, RoleType } from "@prisma/client";
 import { DemoConfig } from "../../config";
-import { larkEmailByLogin } from "../showcase/real-accounts";
-import { stripParens } from "../showcase/showcase-data";
+import { larkEmailByLogin } from "./real-accounts";
+import { stripParens } from "../showcase-data";
 import { userData } from "./users-data";
 import { emailMappings } from "./user-mapping";
 import { pendingEmployeesData } from "./additional-users";

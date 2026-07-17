@@ -8,11 +8,9 @@ import { seedCriteriaConfig } from "./modules/criteria-config";
 import { seedMockPerformanceRecords } from "./modules/performance-records";
 import { seedPrFormsModule } from "./modules/pr-forms";
 import { seedMockSubmissions } from "./modules/pr-submissions";
-import {
-	seedShowcaseCyclesModule,
-	seedShowcaseRoundtables,
-} from "./modules/showcase";
-import { CYCLE } from "./modules/showcase/showcase-data";
+import { seedShowcaseCyclesModule } from "./modules/pr-cycles";
+import { seedShowcaseRoundtables } from "./modules/roundtable-sessions";
+import { CYCLE } from "./modules/showcase-data";
 import { seedUsersModule } from "./modules/users";
 import { seedNotificationsModule } from "./modules/notifications";
 

@@ -9,17 +9,22 @@ import {
 	getRandomItem,
 	getRandomRating,
 } from "../mock-data/mock-utils";
-import { ROUNDTABLE_REVIEWER_EMAILS } from "./showcase-data";
+import { ROUNDTABLE_REVIEWER_EMAILS } from "../showcase-data";
 
 /**
  * Showcase roundtable seed (replaces the old AOO/BDO-only mock).
  *
- * For every cycle that has a roundtable stage and is COMPLETED or ACTIVE:
+ * Only COMPLETED cycles get seeded sessions. The ACTIVE cycle's roundtable is
+ * created MANUALLY by HR during the demo, so we intentionally leave it empty here —
+ * the evidence (self/peer submissions + performance records) is still seeded so the
+ * room has data once HR schedules it.
+ *
+ * For every COMPLETED cycle that has a roundtable stage:
  *   - one roundtable session grouped per department represented in the cycle
  *   - Long Nguyen + Tung Nguyen sit as reviewers on every session (so HR, who only
  *     sees roundtables they joined, sees a consistent reviewer set across cycles)
  *   - every participant is a reviewee with a RoundtableResult and full criterion
- *     results (COMPLETED = finalized; ACTIVE = in-progress, not finalized)
+ *     results, all finalized
  */
 export async function seedShowcaseRoundtables(prisma: PrismaClient) {
 	console.log("Seeding Showcase Roundtable Sessions...");
@@ -47,8 +52,9 @@ export async function seedShowcaseRoundtables(prisma: PrismaClient) {
 		include: { criteria: true },
 	});
 
+	// COMPLETED cycles only — the ACTIVE cycle's roundtable is created by HR manually.
 	const targetCycles = await prisma.pRCycle.findMany({
-		where: { status: { in: [CycleStatus.COMPLETED, CycleStatus.ACTIVE] } },
+		where: { status: CycleStatus.COMPLETED },
 		include: { stages: true, participants: true },
 	});
 
@@ -58,10 +64,7 @@ export async function seedShowcaseRoundtables(prisma: PrismaClient) {
 		);
 		if (!roundtableStage) continue;
 
-		const isCompleted = cycle.status === CycleStatus.COMPLETED;
-		const status = isCompleted
-			? RoundTableStatus.COMPLETED
-			: RoundTableStatus.SCHEDULED;
+		const status = RoundTableStatus.COMPLETED;
 
 		// Group participants by department so each session has a clear roster.
 		const participantsByDept = new Map<string, string[]>();
@@ -126,8 +129,8 @@ export async function seedShowcaseRoundtables(prisma: PrismaClient) {
 								evaluation_criterion_id: crit.id,
 								criterionScore: getRandomRating(),
 								feedback: getRandomItem(feedbackPool),
-								// COMPLETED cycles are finalized; ACTIVE ones are still open.
-								finalizedAt: isCompleted ? new Date() : null,
+								// COMPLETED cycles are finalized.
+								finalizedAt: new Date(),
 								roundtableResultId: result.id,
 							},
 						});

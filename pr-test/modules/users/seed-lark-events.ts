@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { DemoConfig } from "../../config";
-import { larkEmailByLogin } from "../showcase/real-accounts";
+import { larkEmailByLogin } from "./real-accounts";
 import {
 	HERO_LINE_MANAGER,
 	HERO_PROJECT_MANAGER,
-} from "../showcase/showcase-data";
+} from "../showcase-data";
 
 interface LarkTokenResponse {
 	tenant_access_token?: string;

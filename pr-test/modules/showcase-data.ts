@@ -1,5 +1,5 @@
 import { CycleStatus, RoleType } from "@prisma/client";
-import { DemoConfig } from "../../config";
+import { DemoConfig } from "../config";
 
 /**
  * SINGLE SOURCE OF TRUTH for the showcase seed.
@@ -130,8 +130,9 @@ export interface CycleSpec {
 }
 
 // COMPLETED cycles: fully finalized in the past.
-// ACTIVE cycle: 2026-07-05 -> 2026-08-15, currently at the Peer Review stage,
-//   roundtable 07-25 -> 07-30, remaining stages chosen to keep ordering valid.
+// ACTIVE cycle: 2026-07-05 -> 2026-08-15, currently at the Peer Review stage.
+//   Self review closes 07-15 (today is 07-17, so self is done); peer 07-15 -> 07-25,
+//   roundtable 07-25 -> 07-30 (still future — HR schedules those sessions manually).
 // DRAFT cycles: near-future start dates so the eligible-employee set is stable
 //   and large; participants seeded from exactly getEligibleEmployees(start, 4).
 export const CYCLE_SPECS: CycleSpec[] = [
@@ -170,8 +171,8 @@ export const CYCLE_SPECS: CycleSpec[] = [
 		endDate: "2026-08-15T00:00:00.000Z",
 		tenureMonths: 4,
 		stages: {
-			self: { start: "2026-07-05T00:00:00.000Z", end: "2026-07-20T00:00:00.000Z" },
-			peer: { start: "2026-07-20T00:00:00.000Z", end: "2026-07-25T00:00:00.000Z" },
+			self: { start: "2026-07-05T00:00:00.000Z", end: "2026-07-15T00:00:00.000Z" },
+			peer: { start: "2026-07-15T00:00:00.000Z", end: "2026-07-25T00:00:00.000Z" },
 			roundtable: { start: "2026-07-25T00:00:00.000Z", end: "2026-07-30T00:00:00.000Z" },
 			oneOnOne: { start: "2026-07-30T00:00:00.000Z", end: "2026-08-15T00:00:00.000Z" },
 		},
@@ -208,8 +209,11 @@ export const CYCLE_SPECS: CycleSpec[] = [
 ];
 
 // ─── ACTIVE cycle progress targets ───────────────────────────────────────────
-export const ACTIVE_SELF_REVIEW_COMPLETION = 0.9; // 90% of participants submitted self
-export const ACTIVE_PEER_SUBMISSION_COMPLETION = 0.5; // 50% of peer assignments submitted
+// Self review already closed (deadline 07-15), so everyone who was going to submit
+// has — pin self at 100% so the roundtable evidence matrix is fully populated.
+export const ACTIVE_SELF_REVIEW_COMPLETION = 1.0;
+// Peer review is in progress: most assignments submitted, a minority still open.
+export const ACTIVE_PEER_SUBMISSION_COMPLETION = 0.8;
 
 // Each reviewee always gets exactly this many peer assignments (count is equal;
 // only how many are SUBMITTED varies by cycle state).

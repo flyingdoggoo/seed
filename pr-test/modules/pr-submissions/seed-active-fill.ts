@@ -13,12 +13,12 @@ import {
 	HERO_EMPLOYEE,
 	HERO_LINE_MANAGER,
 	HERO_PROJECT_MANAGER,
-} from "./showcase-data";
+} from "../showcase-data";
 
 /**
  * Fills the ACTIVE cycle to an in-progress Peer Review state:
- *   - ~90% of participants have SUBMITTED their self review (rest left as DRAFT)
- *   - ~50% of peer assignments are SUBMITTED (rest DRAFT)
+ *   - self review closed (07-15): all participants have SUBMITTED their self review
+ *   - most peer assignments SUBMITTED (ACTIVE_PEER_SUBMISSION_COMPLETION), rest DRAFT
  * Hero accounts are pinned to deterministic states so a demo login always shows a
  * known screen:
  *   - Chuong Mai (employee): self SUBMITTED, one peer assignment still DRAFT (a to-do)
@@ -119,7 +119,7 @@ export async function seedActiveCycleFill(prisma: PrismaClient) {
 		if (i < selfTarget) await submitSelf(nonHeroParticipants[i]);
 	}
 
-	// ── Peer submissions: ~50% of assignments SUBMITTED, rest DRAFT ────────────
+	// ── Peer submissions: ACTIVE_PEER_SUBMISSION_COMPLETION submitted, rest DRAFT ──
 	const assignments = await prisma.peerAssignment.findMany({
 		where: { peerReviewList: { cycleId: cycle.id }, reviewerId: { not: null } },
 	});
