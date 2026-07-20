@@ -20,7 +20,7 @@ To hit the endpoints, you must include a valid Bearer token in the `Authorizatio
 * **URL Format:** `http://localhost:3000/api/v1/roundtable-sessions/me`
 * **Sample URL (Active Test Cycle):**
   ```
-  GET http://localhost:3000/api/v1/roundtable-sessions/me?cycleId=cmrom6ilw01e1k47kw5y1anou
+  GET http://localhost:3000/api/v1/roundtable-sessions/me?cycleId=cmrsok3ru01iq007kz3us5d7w
   ```
 
 ### B. Get Reviewees List in Roundtable Session
