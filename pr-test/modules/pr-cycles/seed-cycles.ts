@@ -11,6 +11,7 @@ import {
 	CYCLE_SPECS,
 	type CycleSpec,
 	HERO_PROJECT_MANAGER,
+	isCeoOrCpo,
 	isEligible,
 } from "../showcase-data";
 
@@ -274,6 +275,45 @@ async function seedOneCycle(
 			},
 		});
 		assignmentCount++;
+	}
+
+	// Ensure Tung Nguyen PM has extra peer review assignments in ACTIVE & DRAFT cycles
+	if (
+		(spec.status === CycleStatus.ACTIVE || spec.status === CycleStatus.DRAFT) &&
+		ctx.pmUserId
+	) {
+		const pmId = ctx.pmUserId;
+		const targets = participants.filter(
+			(p) => p.id !== pmId && !isCeoOrCpo(p),
+		);
+		const targetsToAssign = targets.slice(0, 3);
+		for (const target of targetsToAssign) {
+			const existing = await prisma.peerAssignment.findFirst({
+				where: {
+					peerReviewListId: peerList.id,
+					revieweeId: target.id,
+					reviewerId: pmId,
+				},
+			});
+			if (!existing) {
+				const managerId = managerByEmployee.get(target.id) ?? null;
+				const isPmPending = needsPmConfirm && managerId === pmId;
+				await prisma.peerAssignment.create({
+					data: {
+						peerReviewListId: peerList.id,
+						stageId: peerStage.id,
+						revieweeId: target.id,
+						reviewerId: pmId,
+						managerId,
+						approvalStatus: isPmPending ? null : true,
+						confirmAt: isPmPending ? null : startDate,
+						requestedAt: startDate,
+						dueAt: new Date(spec.stages.peer.end),
+					},
+				});
+				assignmentCount++;
+			}
+		}
 	}
 
 	console.log(

@@ -1,5 +1,6 @@
 import { PrismaClient, RoleType } from "@prisma/client";
 import { DemoConfig } from "../../config";
+import { isCeoOrCpo } from "../showcase-data";
 import { projectsData } from "./departments-projects-data";
 import { emailMappings, nameMappings } from "./user-mapping";
 
@@ -202,11 +203,13 @@ export async function seedProjects(prisma: PrismaClient) {
 	});
 	const assignedUserIds = new Set(allProjectMembers.map((m) => m.employeeId));
 
-	// Exclude HR_ADMIN from project membership (system-wide role, not project-bound)
+	// Exclude HR_ADMIN and C-level executive roles (CEO, CPO, CTO, CMO) from project membership
+	// (system-wide / company-wide executive roles, not project-bound under PMs)
 	const unassignedUsers = users.filter(
 		(u) =>
 			!assignedUserIds.has(u.id) &&
-			!u.userRoles.some((ur) => ur.role.code === RoleType.HR_ADMIN),
+			!u.userRoles.some((ur) => ur.role.code === RoleType.HR_ADMIN) &&
+			!isCeoOrCpo(u),
 	);
 
 	if (unassignedUsers.length > 0 && createdProjects.length > 0) {

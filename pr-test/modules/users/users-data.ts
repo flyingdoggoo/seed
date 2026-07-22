@@ -34,7 +34,7 @@ export const userData = [
 		jobTitle: "Chief Product Officer",
 		employeeCode: "EHUB0067",
 		email: "minh.phan@ehub.com",
-		lineManager: "Trang Tran (EG - CEO)",
+		lineManager: null, // CPO — top-level executive, no line manager
 		joinedAt: "2024-04-11T18:35:56.369Z",
 		role: RoleType.LINE_MANAGER,
 	},
@@ -115,8 +115,7 @@ export const userData = [
 		jobTitle: DemoConfig.PROJECT_MANAGER.JOB_TITLE,
 		employeeCode: "EHUB0415",
 		email: DemoConfig.PROJECT_MANAGER.EMAIL,
-		// Tung is a top-level manager (peer of Long); no line manager above him.
-		lineManager: null,
+		lineManager: "Trang Tran (EG - CEO)",
 		joinedAt: "2022-10-04T02:48:20.313Z",
 		role: RoleType.PROJECT_MANAGER,
 	},
@@ -881,7 +880,7 @@ export const userData = [
 		jobTitle: "Chief Technology Officer",
 		employeeCode: "EHUB0002",
 		email: "amit.kothari@team.ehub.com",
-		lineManager: "Trang Tran (EG - CEO)",
+		lineManager: null, // CTO — top-level executive, no line manager
 		joinedAt: "2024-09-26T19:17:43.730Z",
 		role: RoleType.EMPLOYEE,
 	},
@@ -1133,7 +1132,7 @@ export const userData = [
 		jobTitle: "Chief Executive Officer",
 		employeeCode: "EHUB0545",
 		email: "quynh.vo@ehub.com",
-		lineManager: "Trang Tran (EG - CEO)",
+		lineManager: null, // CEO — top-level executive, no line manager
 		joinedAt: "2024-02-27T18:17:52.523Z",
 		role: RoleType.EMPLOYEE,
 	},
@@ -1385,7 +1384,7 @@ export const userData = [
 		jobTitle: "Chief Marketing Officer",
 		employeeCode: "EHUB0048",
 		email: "yung.nguyen@ehub.com",
-		lineManager: "Trang Tran (EG - CEO)",
+		lineManager: null, // CMO — top-level executive, no line manager
 		joinedAt: "2023-11-29T10:32:55.333Z",
 		role: RoleType.LINE_MANAGER,
 	},

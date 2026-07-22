@@ -150,44 +150,64 @@ export async function seedActiveCycleFill(prisma: PrismaClient) {
 		const { answers, score } = buildAnswers(form.questions);
 
 		if (shouldSubmit) {
-			const sub = await prisma.pRFormSubmission.create({
-				data: {
-					cycleId: cycle.id,
+			const existingSub = await prisma.pRFormSubmission.findFirst({
+				where: {
 					stageId: peerStage.id,
-					formId: form.id,
 					authorId: a.reviewerId,
 					revieweeId: a.revieweeId,
-					status: SubmissionStatus.SUBMITTED,
-					totalScore: score,
-					submittedAt: new Date(),
-					assignment: { connect: { id: a.id } },
-					answers: { create: answers },
 				},
 			});
-			await prisma.peerAssignment.update({
-				where: { id: a.id },
-				data: { submissionId: sub.id },
-			});
-			submitted++;
+
+			if (!existingSub) {
+				const sub = await prisma.pRFormSubmission.create({
+					data: {
+						cycleId: cycle.id,
+						stageId: peerStage.id,
+						formId: form.id,
+						authorId: a.reviewerId,
+						revieweeId: a.revieweeId,
+						status: SubmissionStatus.SUBMITTED,
+						totalScore: score,
+						submittedAt: new Date(),
+						assignment: { connect: { id: a.id } },
+						answers: { create: answers },
+					},
+				});
+				await prisma.peerAssignment.update({
+					where: { id: a.id },
+					data: { submissionId: sub.id },
+				});
+				submitted++;
+			}
 		} else {
 			// DRAFT: partial answers, not yet submitted.
-			const draftAnswers = answers.slice(0, Math.max(1, answers.length - 1));
-			const sub = await prisma.pRFormSubmission.create({
-				data: {
-					cycleId: cycle.id,
+			const existingSub = await prisma.pRFormSubmission.findFirst({
+				where: {
 					stageId: peerStage.id,
-					formId: form.id,
 					authorId: a.reviewerId,
 					revieweeId: a.revieweeId,
-					status: SubmissionStatus.DRAFT,
-					assignment: { connect: { id: a.id } },
-					answers: { create: draftAnswers },
 				},
 			});
-			await prisma.peerAssignment.update({
-				where: { id: a.id },
-				data: { submissionId: sub.id },
-			});
+
+			if (!existingSub) {
+				const draftAnswers = answers.slice(0, Math.max(1, answers.length - 1));
+				const sub = await prisma.pRFormSubmission.create({
+					data: {
+						cycleId: cycle.id,
+						stageId: peerStage.id,
+						formId: form.id,
+						authorId: a.reviewerId,
+						revieweeId: a.revieweeId,
+						status: SubmissionStatus.DRAFT,
+						assignment: { connect: { id: a.id } },
+						answers: { create: draftAnswers },
+					},
+				});
+				await prisma.peerAssignment.update({
+					where: { id: a.id },
+					data: { submissionId: sub.id },
+				});
+			}
 		}
 	}
 

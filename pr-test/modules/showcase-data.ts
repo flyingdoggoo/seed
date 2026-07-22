@@ -37,6 +37,30 @@ export interface ShowcaseAccount {
 	lineManagerEmail: string | null;
 }
 
+export const HERO_CEO: ShowcaseAccount = {
+	fullName: "Trang Tran",
+	jobTitle: "Chief Executive Officer",
+	email: "trang.tran@ehub.com",
+	larkEmail: "trang.tran@ehub.com",
+	employeeCode: "EHUB0001",
+	joinedAt: "2023-01-01T00:00:00.000Z",
+	role: RoleType.LINE_MANAGER,
+	departmentCode: "HRO",
+	lineManagerEmail: null,
+};
+
+export const HERO_CPO: ShowcaseAccount = {
+	fullName: "MinhMai Phan",
+	jobTitle: "Chief Product Officer",
+	email: "minh.phan@ehub.com",
+	larkEmail: "minh.phan@ehub.com",
+	employeeCode: "EHUB0067",
+	joinedAt: "2023-01-01T00:00:00.000Z",
+	role: RoleType.LINE_MANAGER,
+	departmentCode: "PDO",
+	lineManagerEmail: null, // CPO — top-level executive, no line manager
+};
+
 export const HERO_LINE_MANAGER: ShowcaseAccount = {
 	fullName: "Long Nguyen",
 	jobTitle: DemoConfig.LINE_MANAGER.JOB_TITLE,
@@ -46,7 +70,7 @@ export const HERO_LINE_MANAGER: ShowcaseAccount = {
 	joinedAt: "2000-07-10T00:00:00.000Z",
 	role: RoleType.LINE_MANAGER,
 	departmentCode: "PDO",
-	lineManagerEmail: null,
+	lineManagerEmail: HERO_CEO.email,
 };
 
 export const HERO_PROJECT_MANAGER: ShowcaseAccount = {
@@ -58,9 +82,7 @@ export const HERO_PROJECT_MANAGER: ShowcaseAccount = {
 	joinedAt: "1999-07-28T00:00:00.000Z",
 	role: RoleType.PROJECT_MANAGER,
 	departmentCode: "PMO",
-	// Tung is a top-level manager (peer of Long), so he has no line manager above
-	// him. He must NOT report to Long — both are management-level and same-tier.
-	lineManagerEmail: null,
+	lineManagerEmail: HERO_CEO.email,
 };
 
 export const HERO_EMPLOYEE: ShowcaseAccount = {
@@ -86,15 +108,63 @@ export const HERO_HR_ADMIN: ShowcaseAccount = {
 	joinedAt: "2023-01-01T00:00:00.000Z",
 	role: RoleType.HR_ADMIN,
 	departmentCode: "HRO",
-	lineManagerEmail: null,
+	lineManagerEmail: HERO_CEO.email,
 };
 
 export const HERO_ACCOUNTS: ShowcaseAccount[] = [
+	HERO_CEO,
+	HERO_CPO,
 	HERO_LINE_MANAGER,
 	HERO_PROJECT_MANAGER,
 	HERO_EMPLOYEE,
 	HERO_HR_ADMIN,
 ];
+
+/**
+ * Returns true if a user account / identity represents CEO or CPO.
+ * CEO and CPO should never be assigned as reviewees in Peer Review assignments.
+ */
+export function isCeoOrCpo(user: {
+	jobTitle?: string | null;
+	fullName?: string | null;
+	email?: string | null;
+}): boolean {
+	if (!user) return false;
+	const title = user.jobTitle?.toLowerCase() ?? "";
+	const name = user.fullName?.toLowerCase() ?? "";
+	const email = user.email?.toLowerCase() ?? "";
+
+	if (
+		title.includes("ceo") ||
+		title.includes("chief executive officer") ||
+		title.includes("cpo") ||
+		title.includes("chief product officer") ||
+		title.includes("cto") ||
+		title.includes("chief technology officer") ||
+		title.includes("cmo") ||
+		title.includes("chief marketing officer") ||
+		title.includes("coo") ||
+		title.includes("chief operating officer")
+	) {
+		return true;
+	}
+	if (
+		name.includes("ceo") ||
+		name.includes("cpo") ||
+		name.includes("cto") ||
+		name.includes("cmo") ||
+		email === "trang.tran@ehub.com" ||
+		email === "minh.phan@ehub.com" ||
+		email === "amit.kothari@team.ehub.com" ||
+		email === "quynh.vo@ehub.com" ||
+		email === "yung.nguyen@ehub.com" ||
+		email === HERO_CEO.email ||
+		email === HERO_CPO.email
+	) {
+		return true;
+	}
+	return false;
+}
 
 // ─── Roundtable reviewers ────────────────────────────────────────────────────
 // Long and Tung sit on every roundtable that exists, so HR (who only sees the

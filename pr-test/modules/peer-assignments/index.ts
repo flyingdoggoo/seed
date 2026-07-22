@@ -1,4 +1,5 @@
 import { AssignmentStatus, PrismaClient, StageType } from "@prisma/client";
+import { isCeoOrCpo } from "../showcase-data";
 
 export async function seedMockPeerAssignments(prisma: PrismaClient) {
 	console.log("Seeding Mock Peer Assignments...");
@@ -36,6 +37,7 @@ export async function seedMockPeerAssignments(prisma: PrismaClient) {
 		for (let i = 0; i < cycle.participants.length; i++) {
 			const participant = cycle.participants[i];
 			const reviewee = users.find((u) => u.id === participant.employeeId)!;
+			if (!reviewee || isCeoOrCpo(reviewee)) continue;
 			const managerRel = userManagers.find(
 				(um) => um.employeeId === reviewee.id,
 			);

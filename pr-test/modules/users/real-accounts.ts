@@ -1,5 +1,7 @@
 import { RoleType } from "@prisma/client";
 import {
+	HERO_CEO,
+	HERO_CPO,
 	HERO_EMPLOYEE,
 	HERO_HR_ADMIN,
 	HERO_LINE_MANAGER,
@@ -16,12 +18,14 @@ import {
  * joinedAt   = real start date where the export gives one; a safe early default
  *              (2023-01-01) where it is blank, so the person stays cycle-eligible.
  *
- * The 4 heroes are defined in showcase-data.ts and re-exported here so the whole
+ * The heroes are defined in showcase-data.ts and re-exported here so the whole
  * fixed-identity set is seeded from one list.
  */
 
 export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 	// Heroes first (authoritative).
+	HERO_CEO,
+	HERO_CPO,
 	HERO_LINE_MANAGER,
 	HERO_PROJECT_MANAGER,
 	HERO_EMPLOYEE,
@@ -37,7 +41,7 @@ export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 		joinedAt: "2023-01-01T00:00:00.000Z",
 		role: RoleType.LINE_MANAGER,
 		departmentCode: "PDO",
-		lineManagerEmail: null,
+		lineManagerEmail: HERO_CEO.email,
 	},
 	{
 		fullName: "Linh Manager",
@@ -48,7 +52,7 @@ export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 		joinedAt: "2023-01-01T00:00:00.000Z",
 		role: RoleType.FUNCTION_LEAD,
 		departmentCode: "FE",
-		lineManagerEmail: null,
+		lineManagerEmail: HERO_CPO.email,
 	},
 	{
 		fullName: "Kien Nguyen Enos",
@@ -59,7 +63,7 @@ export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 		joinedAt: "2023-01-01T00:00:00.000Z",
 		role: RoleType.LINE_MANAGER,
 		departmentCode: "HRO",
-		lineManagerEmail: null,
+		lineManagerEmail: HERO_CEO.email,
 	},
 	{
 		fullName: "nguyen nguyen",
@@ -70,7 +74,7 @@ export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 		joinedAt: "2026-06-22T00:00:00.000Z",
 		role: RoleType.LINE_MANAGER,
 		departmentCode: "HRO",
-		lineManagerEmail: "ba.le@ehub.enosta.com",
+		lineManagerEmail: HERO_CEO.email,
 	},
 	{
 		fullName: "Le Ky Ba",
@@ -81,7 +85,7 @@ export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 		joinedAt: "2023-01-01T00:00:00.000Z",
 		role: RoleType.LINE_MANAGER,
 		departmentCode: "HRO",
-		lineManagerEmail: "ba.le@ehub.enosta.com",
+		lineManagerEmail: HERO_CEO.email,
 	},
 	{
 		fullName: "Hiếu HR",
@@ -92,18 +96,18 @@ export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 		joinedAt: "2023-01-01T00:00:00.000Z",
 		role: RoleType.LINE_MANAGER,
 		departmentCode: "HRO",
-		lineManagerEmail: "nguyenthanhhieu17022005@ehub.enosta.com",
+		lineManagerEmail: HERO_CEO.email,
 	},
 	{
 		fullName: "Hiếu Nhân Viên",
 		jobTitle: "Engineering Manager",
 		email: "hieunhanvien@ehub.enosta.com",
 		larkEmail: "itadadenhat@gmail.com",
-		employeeCode: "EHUB-R-0007",
+		employeeCode: "EHUB-R-0026",
 		joinedAt: "2026-06-24T00:00:00.000Z",
 		role: RoleType.EMPLOYEE,
 		departmentCode: "BE",
-		lineManagerEmail: "nguyenthanhhieu17022005@ehub.enosta.com",
+		lineManagerEmail: HERO_CEO.email,
 	},
 	{
 		fullName: "Tai Vo PM",
@@ -114,7 +118,7 @@ export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 		joinedAt: "2023-01-01T00:00:00.000Z",
 		role: RoleType.PROJECT_MANAGER,
 		departmentCode: "FE",
-		lineManagerEmail: null,
+		lineManagerEmail: HERO_CEO.email,
 	},
 	{
 		fullName: "adam trần",
@@ -136,7 +140,7 @@ export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 		joinedAt: "2023-01-01T00:00:00.000Z",
 		role: RoleType.EMPLOYEE,
 		departmentCode: "FE",
-		lineManagerEmail: "ba.le@ehub.enosta.com",
+		lineManagerEmail: HERO_CEO.email,
 	},
 	{
 		fullName: "Vo Duc Ba",
@@ -147,7 +151,7 @@ export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 		joinedAt: "2023-01-01T00:00:00.000Z",
 		role: RoleType.EMPLOYEE,
 		departmentCode: "FE",
-		lineManagerEmail: "ba.le@ehub.enosta.com",
+		lineManagerEmail: HERO_CEO.email,
 	},
 	{
 		fullName: "Hiếu Manager",
@@ -158,7 +162,7 @@ export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 		joinedAt: "2023-01-01T00:00:00.000Z",
 		role: RoleType.LINE_MANAGER,
 		departmentCode: "FE",
-		lineManagerEmail: null,
+		lineManagerEmail: HERO_CEO.email,
 	},
 	{
 		fullName: "Linh Do",
@@ -180,7 +184,7 @@ export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 		joinedAt: "2023-01-01T00:00:00.000Z",
 		role: RoleType.FUNCTION_LEAD,
 		departmentCode: "BE",
-		lineManagerEmail: null,
+		lineManagerEmail: HERO_CPO.email,
 	},
 	{
 		fullName: "Kien Nguyen",
@@ -191,7 +195,7 @@ export const REAL_LARK_ACCOUNTS: ShowcaseAccount[] = [
 		joinedAt: "2023-01-01T00:00:00.000Z",
 		role: RoleType.FUNCTION_LEAD,
 		departmentCode: "FE",
-		lineManagerEmail: "kien.nguyen123@ehub.enosta.com",
+		lineManagerEmail: HERO_CEO.email,
 	},
 ];
 
